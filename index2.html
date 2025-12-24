@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>나의 학습 관리</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Malgun Gothic', sans-serif;
+            background-color: #f0f8f0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .subjects {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .subject-circle {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background-color: #a8d5a8;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 3px solid #7cb97c;
+        }
+
+        .subject-circle:hover {
+            background-color: #8bc68b;
+            transform: scale(1.05);
+        }
+
+        .subject-circle.active {
+            background-color: #6ba66b;
+            box-shadow: 0 0 15px rgba(0,0,0,0.3);
+        }
+
+        .subject-name {
+            font-size: 18px;
+            font-weight: bold;
+            color: #2d4a2d;
+        }
+
+        .content-area {
+            display: flex;
+            gap: 20px;
+            margin-top: 30px;
+        }
+
+        .files-section, .plan-section {
+            flex: 1;
+            background-color: #d4e8d4;
+            border: 2px solid #7cb97c;
+            border-radius: 10px;
+            padding: 20px;
+            min-height: 400px;
+        }
+
+        .section-title {
+            font-size: 20px;
+            font-weight: bold;
+            color: #2d4a2d;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .file-upload {
+            margin-bottom: 20px;
+        }
+
+        .file-list {
+            list-style: none;
+        }
+
+        .file-item {
+            background-color: white;
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .delete-btn {
+            background-color: #ff6b6b;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+
+        .delete-btn:hover {
+            background-color: #ff5252;
+        }
+
+        .plan-input {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .plan-input input {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #7cb97c;
+            border-radius: 5px;
+        }
+
+        .add-btn {
+            background-color: #6ba66b;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .add-btn:hover {
+            background-color: #5a955a;
+        }
+
+        .plan-list {
+            list-style: none;
+        }
+
+        .plan-item {
+            background-color: white;
+            padding: 12px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .plan-item.completed {
+            background-color: #e8f5e8;
+            text-decoration: line-through;
+            opacity: 0.7;
+        }
+
+        .plan-item input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+
+        .plan-text {
+            flex: 1;
+        }
+
+        input[type="file"] {
+            padding: 10px;
+            border: 1px solid #7cb97c;
+            border-radius: 5px;
+            width: 100%;
+        }
+
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 style="text-align: center; color: #2d4a2d; margin-bottom: 30px;">📚 나의 학습 관리 시스템</h1>
+        
+        <div class="subjects">
+            <div class="subject-circle" data-subject="국어">
+                <span class="subject-name">국어<br>탐구보고서</span>
+            </div>
+            <div class="subject-circle" data-subject="수학">
+                <span class="subject-name">수학<br>탐구보고서</span>
+            </div>
+            <div class="subject-circle" data-subject="영어">
+                <span class="subject-name">영어<br>독서보고서</span>
+            </div>
+            <div class="subject-circle" data-subject="사회">
+                <span class="subject-name">사회<br>탐구보고서</span>
+            </div>
+            <div class="subject-circle" data-subject="과학">
+                <span class="subject-name">과학<br>보고서</span>
+            </div>
+            <div class="subject-circle" data-subject="한국사">
+                <span class="subject-name">한국사<br>탐구보고서</span>
+            </div>
+            <div class="subject-circle" data-subject="그외">
+                <span class="subject-name">그외<br>과목탐구보고서</span>
+            </div>
+        </div>
+
+        <div class="content-area">
+            <div class="files-section">
+                <h2 class="section-title">📁 파일 관리</h2>
+                <div class="file-upload">
+                    <input type="file" id="fileInput" multiple>
+                </div>
+                <ul class="file-list" id="fileList"></ul>
+            </div>
+
+            <div class="plan-section">
+                <h2 class="section-title">📝 계획</h2>
+                <div class="plan-input">
+                    <input type="text" id="planInput" placeholder="계획을 입력하세요...">
+                    <button class="add-btn" onclick="addPlan()">추가</button>
+                </div>
+                <ul class="plan-list" id="planList"></ul>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentSubject = null;
+        let subjectData = {
+            '국어': { files: [], plans: [] },
+            '수학': { files: [], plans: [] },
+            '영어': { files: [], plans: [] },
+            '사회': { files: [], plans: [] },
+            '과학': { files: [], plans: [] },
+            '한국사': { files: [], plans: [] },
+            '그외': { files: [], plans: [] }
+        };
+
+        // 과목 선택
+        document.querySelectorAll('.subject-circle').forEach(circle => {
+            circle.addEventListener('click', function() {
+                document.querySelectorAll('.subject-circle').forEach(c => c.classList.remove('active'));
+                this.classList.add('active');
+                currentSubject = this.dataset.subject;
+                loadSubjectData();
+            });
+        });
+
+        // 파일 추가
+        document.getElementById('fileInput').addEventListener('change', function(e) {
+            if (!currentSubject) {
+                alert('먼저 과목을 선택해주세요!');
+                return;
+            }
+            
+            const files = Array.from(e.target.files);
+            files.forEach(file => {
+                subjectData[currentSubject].files.push({
+                    name: file.name,
+                    date: new Date().toLocaleString()
+                });
+            });
+            
+            displayFiles();
+            e.target.value = '';
+        });
+
+        // 파일 목록 표시
+        function displayFiles() {
+            const fileList = document.getElementById('fileList');
+            fileList.innerHTML = '';
+            
+            if (currentSubject && subjectData[currentSubject].files.length > 0) {
+                subjectData[currentSubject].files.forEach((file, index) => {
+                    const li = document.createElement('li');
+                    li.className = 'file-item';
+                    li.innerHTML = `
+                        <span>📄 ${file.name} <small>(${file.date})</small></span>
+                        <button class="delete-btn" onclick="deleteFile(${index})">삭제</button>
+                    `;
+                    fileList.appendChild(li);
+                });
+            }
+        }
+
+        // 파일 삭제
+        function deleteFile(index) {
+            subjectData[currentSubject].files.splice(index, 1);
+            displayFiles();
+        }
+
+        // 계획 추가
+        function addPlan() {
+            if (!currentSubject) {
+                alert('먼저 과목을 선택해주세요!');
+                return;
+            }
+            
+            const planInput = document.getElementById('planInput');
+            const planText = planInput.value.trim();
+            
+            if (planText === '') {
+                alert('계획을 입력해주세요!');
+                return;
+            }
+            
+            subjectData[currentSubject].plans.push({
+                text: planText,
+                completed: false
+            });
+            
+            planInput.value = '';
+            displayPlans();
+        }
+
+        // Enter 키로 계획 추가
+        document.getElementById('planInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                addPlan();
+            }
+        });
+
+        // 계획 목록 표시
+        function displayPlans() {
+            const planList = document.getElementById('planList');
+            planList.innerHTML = '';
+            
+            if (currentSubject && subjectData[currentSubject].plans.length > 0) {
+                subjectData[currentSubject].plans.forEach((plan, index) => {
+                    const li = document.createElement('li');
+                    li.className = 'plan-item' + (plan.completed ? ' completed' : '');
+                    li.innerHTML = `
+                        <input type="checkbox" ${plan.completed ? 'checked' : ''} 
+                               onchange="togglePlan(${index})">
+                        <span class="plan-text">${plan.text}</span>
+                        <button class="delete-btn" onclick="deletePlan(${index})">삭제</button>
+                    `;
+                    planList.appendChild(li);
+                });
+            }
+        }
+
+        // 계획 완료/미완료 토글
+        function togglePlan(index) {
+            subjectData[currentSubject].plans[index].completed = 
+                !subjectData[currentSubject].plans[index].completed;
+            displayPlans();
+        }
+
+        // 계획 삭제
+        function deletePlan(index) {
+            subjectData[currentSubject].plans.splice(index, 1);
+            displayPlans();
+        }
+
+        // 과목 데이터 불러오기
+        function loadSubjectData() {
+            displayFiles();
+            displayPlans();
+        }
+
+        // 로컬 스토리지에 데이터 저장 (선택사항)
+        window.addEventListener('beforeunload', function() {
+            localStorage.setItem('subjectData', JSON.stringify(subjectData));
+        });
+
+        // 페이지 로드 시 데이터 복원 (선택사항)
+        window.addEventListener('load', function() {
+            const saved = localStorage.getItem('subjectData');
+            if (saved) {
+                subjectData = JSON.parse(saved);
+            }
+        });
+    </script>
+</body>
+</html>
